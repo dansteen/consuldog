@@ -1,0 +1,9 @@
+package: github.com/dansteen/consuldog
+import:
+- package: github.com/hashicorp/consul
+  subpackages:
+  - api
+- package: github.com/mitchellh/go-homedir
+- package: github.com/spf13/cobra
+- package: github.com/spf13/viper
+- package: github.com/mitchellh/go-ps.git
