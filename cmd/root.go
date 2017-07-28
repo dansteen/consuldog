@@ -36,7 +36,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: watch,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -54,14 +54,13 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is /etc/consuldog.yaml)")
 	RootCmd.PersistentFlags().StringP("templateFolder", "t", "/etc/dd-agent/conf.d/auto_conf", "the folder containing our datadog templates")
 	RootCmd.PersistentFlags().StringP("datadogFolder", "d", "/etc/dd-agent", "the base datadog config folder (the one containing the datadog.conf file)")
-	RootCmd.PersistentFlags().StringP("datadogProcName", "k", "supervisord", "the name of the datadog process we should send reload signals to.  A process with this name, that is running as the same user as consuldog (if one can be found) will be sent a HUP signal")
+	RootCmd.PersistentFlags().StringP("datadogProcName", "k", "supervisord", "the name of the datadog process we should send reload signals to.  A process with this name, that is running as the same user as consuldog (if one can be found) will be sent a HUP signal when new datadog configs are written.")
 	RootCmd.PersistentFlags().StringP("prefix", "p", "consuldogConfig:", "the consul tag prefix to look for in consul to know that a service needs monitoring")
-	RootCmd.PersistentFlags().StringP("consulAddress", "a", "http://localhost:8500", "the address of the consul server")
+	RootCmd.PersistentFlags().StringP("consulAddress", "a", "http://localhost:8500", "the address of the consul agent")
 	RootCmd.PersistentFlags().Int64P("datadogMinReloadInterval", "m", 10, "the minimum number of seconds between reloads of the DataDog process regardless of how many times the configs are updated in that time.")
-	RootCmd.PersistentFlags().StringSliceP("nodeName", "n", []string{}, "the name of the node we want to look at the services of")
+	RootCmd.PersistentFlags().StringSliceP("nodeName", "n", []string{}, "the name of the node we want to look at the services of (default is the name of the node of the consul agent we are connecting to)")
 
 }
 

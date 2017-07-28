@@ -57,8 +57,17 @@ func watch(cmd *cobra.Command, args []string) {
 	triggerReload := make(chan bool)
 	go datadog.Reloader(triggerReload, stop)
 
-	// run a thread for each onode we are monitoring
-	for _, node := range viper.GetStringSlice("nodeName") {
+	var nodeNames []string
+	// get our list of nodes or, if its not set, use the nodename of the agent we are connecting to
+	if len(viper.GetStringSlice("nodeName")) > 0 {
+		nodeNames = viper.GetStringSlice("nodeName")
+	} else {
+		log.Printf("%s", "No nodeName specified.  Attempting to read it from local agent....")
+		nodeNames = []string{client.GetNodeName()}
+		log.Printf("%s\n", nodeNames[0])
+	}
+	// then run a thread for each node we are monitoring
+	for _, node := range nodeNames {
 		go client.MonitorNode(node, newServices, stop)
 	}
 	// listen for new services

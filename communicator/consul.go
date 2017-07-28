@@ -2,6 +2,7 @@ package communicator
 
 import (
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -16,13 +17,15 @@ type ConsulClient struct {
 
 // NewConsulClient will generate a new connection to consul
 func NewConsulClient(consulAddress string) ConsulClient {
+	// log errors to stderr
+	logger := log.New(os.Stderr, log.Prefix(), 0)
 	// configure our consul client
 	config := consul.Config{
 		Address: consulAddress,
 	}
 	consulClient, err := consul.NewClient(&config)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	return ConsulClient{
 		client: consulClient,
@@ -32,6 +35,8 @@ func NewConsulClient(consulAddress string) ConsulClient {
 // MonitorNode will monitor consul for changes in a node and, on changes, send back a list of service for that node
 // that match our prefix
 func (consulClient *ConsulClient) MonitorNode(node string, serviceOut chan<- services.NodeServices, cont <-chan bool) {
+	// log errors to stderr
+	logger := log.New(os.Stderr, log.Prefix(), 0)
 	// grab our catalog connection
 	catalog := consulClient.client.Catalog()
 	// we want to return right away the first time so we get an initial set of services
@@ -48,7 +53,7 @@ func (consulClient *ConsulClient) MonitorNode(node string, serviceOut chan<- ser
 			})
 			// if we get an error we wait and then try again
 			if err != nil {
-				log.Println(err)
+				logger.Println(err)
 				time.Sleep(5 * time.Second)
 			} else {
 				if lastIndex != meta.LastIndex {
@@ -80,5 +85,21 @@ func (consulClient *ConsulClient) MonitorNode(node string, serviceOut chan<- ser
 				}
 			}
 		}
+	}
+}
+
+// GetNodeName will get the node name of the consul agent we have connected to
+func (consulClient *ConsulClient) GetNodeName() string {
+	// log errors to stderr
+	logger := log.New(os.Stderr, log.Prefix(), 0)
+	// we keep trying to connect
+	for {
+		nodeName, err := consulClient.client.Agent().NodeName()
+		if err != nil {
+			logger.Println(err)
+		} else {
+			return nodeName
+		}
+		time.Sleep(5 * time.Second)
 	}
 }

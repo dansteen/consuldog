@@ -19,7 +19,7 @@ func (sig SigHup) Signal()        {}
 // Reloader will reload the datadog process when a value is set on the reload channel
 func Reloader(reloadRequested <-chan bool, stop <-chan bool) {
 	// log errors to stderr
-	logger := log.New(os.Stderr, "", 0)
+	logger := log.New(os.Stderr, log.Prefix(), 0)
 	// set up a ticker to trigger the actual reload
 	ticker := time.NewTicker(time.Duration(viper.GetInt64("datadogMinReloadInterval")) * time.Second)
 	// store a value to see if we should actually reload or not
