@@ -23,6 +23,7 @@ Consuldog relies on specific tags being present in consul on the services you wi
 <prefix>:<template_name>:<datadog_config_name>
 ```
 Where:
+
 | word                  | Usage                                                                                                                                                                                                                     | Default         |
 |-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
 | <prefix>              | A freeform string that lets consuldog know that this is a service that needs to be monitored.                                                                                                                             | consuldogConfig |
