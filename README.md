@@ -26,9 +26,9 @@ Where:
 
 | word                  | Usage                                                                                                                                                                                                                     | Default         |
 |-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| <prefix>              | A freeform string that lets consuldog know that this is a service that needs to be monitored.                                                                                                                             | consuldogConfig |
+| \<prefix>             | A freeform string that lets consuldog know that this is a service that needs to be monitored.                                                                                                                             | consuldogConfig |
 | <template_name>       | The name of the template consuldog should *ingest* to generate datadog configs for this services.  This should be the full filename of the template as it is found in the `templateFolder` (see below).                   | n/a             |
-| <datadog_config_name> | The name of the datadog config file to generate for this service, using the template mentioned above.  This should just be the base name of the config without the `.yaml` extension (e.g. `apache`, *not* `apache.yaml`) |                 |
+| <datadog_config_name> | The name of the datadog config file to generate for this service, using the template mentioned above.  This should just be the base name of the config without the `.yaml` extension (e.g. `apache`, *not* `apache.yaml`) | n/a             |
 
 More, concretely, if you are using the default prefix, the tag would look like this:
 ```
