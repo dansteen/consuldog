@@ -1,9 +1,9 @@
 # consuldog
-Zero-conf, consul based, service discover daemon for DataDog inspired by fabio ([This fabio](http://github.com/fabiolb/fabio) not [this fabio](http://www.fabioinc.com/)).
+Zero-conf, consul based, service discovery daemon for DataDog inspired by fabio ([This fabio](http://github.com/fabiolb/fabio) not [this fabio](http://www.fabioinc.com/)).
 
 
 ## The Problem
-[Datadog](http://datadoghq.com) is a monitoring solution for servers and services, however, it relies on static files to determin *what* it needs to monitor.  This is fine if you are running a couple services on a box in a fairly static way.  However, if you are running services inside a cluster manager you never know what services are on what box are listening on what IP and on what port monitoring the right things at the right time becomes more difficult. 
+[Datadog](http://datadoghq.com) is a monitoring solution for servers and services, however, it relies on static files to determin *what* it needs to monitor.  This is fine if you are running a couple services on a box in a fairly static way.  However, if you are running services inside a cluster manager you never know what services are on what box are listening on what IP and on what port.  Monitoring the right things at the right time becomes more difficult. 
 
 ## The solution
 Enter consuldog.  Consuldog is a daemon that listens for service changes in [consul](https://www.consul.io/), generates datadog check.d/*.yaml files based on templates, and tells datadog to rescan its config files.   Consuldog is inspired by [fabio](http://github.com/fabiolb/fabio) and attempts to be zero-conf in the same fashion.   
@@ -22,6 +22,13 @@ Consuldog relies on specific tags being present in consul on the services you wi
 ```
 <prefix>:<template_name>:<datadog_config_name>
 ```
+Where:
+| word                  | Usage                                                                                                                                                                                                                     | Default         |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| <prefix>              | A freeform string that lets consuldog know that this is a service that needs to be monitored.                                                                                                                             | consuldogConfig |
+| <template_name>       | The name of the template consuldog should *ingest* to generate datadog configs for this services.  This should be the full filename of the template as it is found in the `templateFolder` (see below).                   | n/a             |
+| <datadog_config_name> | The name of the datadog config file to generate for this service, using the template mentioned above.  This should just be the base name of the config without the `.yaml` extension (e.g. `apache`, *not* `apache.yaml`) |                 |
+
 More, concretely, if you are using the default prefix, the tag would look like this:
 ```
 consuldogConfig:app_apache.yaml:apache
