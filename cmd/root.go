@@ -22,18 +22,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
-
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "consuldog",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "A Zero-conf, consul based, service discovery daemon for DataDog",
+	Long: `Consuldog is a service discovery daemon for datadog that auto
+populates datadog config files based on services found in consul.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: watch,
@@ -62,20 +56,13 @@ func init() {
 	RootCmd.PersistentFlags().Int64P("datadogMinReloadInterval", "m", 10, "the minimum number of seconds between reloads of the DataDog process regardless of how many times the configs are updated in that time.")
 	RootCmd.PersistentFlags().StringSliceP("nodeName", "n", []string{}, "the name of the node we want to look at the services of (default is the name of the node of the consul agent we are connecting to)")
 
+	RootCmd.PersistentFlags().Bool("version", false, "Print the version and exit")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-
-		// Search config in home directory with name ".consuldog" (without extension).
-		viper.AddConfigPath("/etc/")
-		viper.SetConfigName("consuldog.yaml")
-	}
-
 	viper.AutomaticEnv() // read in environment variables that match
+
 	// bind all of our flags so we can access them with viper
 	viper.BindPFlags(RootCmd.Flags())
 
@@ -86,4 +73,10 @@ func initConfig() {
 
 	// we have to set this here since it uses other values
 	viper.SetDefault("templateFolder", path.Join(viper.GetString("datadogFolder"), "/conf.d/auto_conf"))
+
+	// if we just want to print the version we do that and exit
+	if viper.GetBool("version") == true {
+		fmt.Println(PrettyVersion(GetVersionParts()))
+		os.Exit(0)
+	}
 }

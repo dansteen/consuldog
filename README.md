@@ -53,6 +53,23 @@ In the template, the following template variables will be replaced with their re
 | {{ .CreateIndex }} | The CreateIndex of the service (this is a consul thing)           | uint64   |
 | {{ .ModifyIndex }} | The ModifyIndex of the service (this is a consul thing)           | uint64   |
 
+### Examples
+The following will generate monitoring for apache:
+```
+init_config:
+instances:
+  - apache_status_url: http://{{.Address}}:{{.Port}}/server-status?auto
+```
+and, assuming two apache services on the box will generate the following config:
+```
+init_config:
+instances:
+  - apache_status_url: http://10.10.20.56:45322/server-status?auto
+  - apache_status_url: http://10.10.20.56:76232/server-status?auto
+```
+a config instance is generated for each instance of the service on that particular box.
+
+
 ## Command line switches
 consuldog can run without any configuration, and will monitor services that are correctly tagged, and that have templates.  However, should you wish, there are a number of tunable items:
 
