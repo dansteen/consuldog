@@ -52,7 +52,7 @@ func WriteConfig(allServices services.Services) {
 
 			// once we have the template, unMarshal the yaml
 			var config CheckConf
-			err := yaml.UnmarshalStrict(tmpBuf.Bytes(), &config)
+			err := yaml.Unmarshal(tmpBuf.Bytes(), &config)
 			if err != nil {
 				logger.Println(err)
 				logger.Printf("Could not convert template %s to object for service %s. Skipping.\n", service.ConfigTemplate, service.Service)
@@ -111,7 +111,7 @@ func getConfTemplates(allServices services.Services) map[string]*template.Templa
 
 		// make sure its valid YAML and conforms to the structrue we need for datadog
 		var config CheckConf
-		err = yaml.UnmarshalStrict(rawTemplate, &config)
+		err = yaml.Unmarshal(rawTemplate, &config)
 		if err != nil {
 			logger.Println(err)
 			logger.Printf("%s is not valid YAML (or does not conform to our required structure) for %s. Please ensure its formatted correctly.  Skipping.\n", templatePath, service.ConfigTemplate)
