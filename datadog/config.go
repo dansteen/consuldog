@@ -12,6 +12,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/dansteen/consuldog/services"
+	consul "github.com/hashicorp/consul/api"
 	"github.com/spf13/viper"
 )
 
@@ -30,7 +31,7 @@ func WriteConfig(allServices services.Services) {
 	for datadogType, services := range allServices.ByType {
 		// create our aggregate config for this type
 		typeConfig := CheckConf{
-			InitConfig: make([]interface{}, 0),
+			InitConfig: make(map[string]interface{}),
 			Instances:  make([]interface{}, 0),
 		}
 
@@ -60,8 +61,8 @@ func WriteConfig(allServices services.Services) {
 			}
 
 			// once we've gotten to this point things look good so we add this config into our final config
-			for _, initConfig := range config.InitConfig {
-				typeConfig.InitConfig = append(typeConfig.InitConfig, initConfig)
+			for initConfName, initConfValue := range config.InitConfig {
+				typeConfig.InitConfig[initConfName] = initConfValue
 			}
 			for _, instance := range config.Instances {
 				typeConfig.Instances = append(typeConfig.Instances, instance)
@@ -109,22 +110,48 @@ func getConfTemplates(allServices services.Services) map[string]*template.Templa
 			continue
 		}
 
-		// make sure its valid YAML and conforms to the structrue we need for datadog
+		// turn our raw template string into a template object
+		tmpl, err := template.New(service.ConfigTemplate).Parse(string(rawTemplate))
+		if err != nil {
+			logger.Println(err)
+			logger.Printf("Could not create template for %s. Skipping.\n", service.ConfigTemplate)
+			continue
+		}
+
+		// YAML doesn't like {{ at the start of a scalar.  Unfortunately, this is common in our templates.  Fortunately, in usage, we de-template prior to actually UnMarshaling the template so here, when testing it we dud out the values first as well.
+		dudService := services.Service{
+			AgentService: consul.AgentService{
+				Address:     "127.0.0.1",
+				CreateIndex: 123456789,
+				ModifyIndex: 123456789,
+				ID:          "test-service-ID",
+				Port:        9999,
+				Service:     "test-service",
+				Tags:        []string{"tag1", "tag2"},
+			},
+			ConfigTemplate: service.ConfigTemplate,
+			DatadogType:    service.DatadogType,
+			Node:           "test-node",
+		}
+		// instantiate our dud
+		dudInstance := new(bytes.Buffer)
+		err = tmpl.Execute(dudInstance, dudService)
+		if err != nil {
+			logger.Println(err)
+			logger.Printf("Could not execute template %s. Skipping.\n", dudService.ConfigTemplate)
+			continue
+		}
+
+		// once we have an instantiated template make sure its valid YAML and conforms to the structrue we need for datadog
 		var config CheckConf
-		err = yaml.Unmarshal(rawTemplate, &config)
+		err = yaml.Unmarshal(dudInstance.Bytes(), &config)
 		if err != nil {
 			logger.Println(err)
 			logger.Printf("%s is not valid YAML (or does not conform to our required structure) for %s. Please ensure its formatted correctly.  Skipping.\n", templatePath, service.ConfigTemplate)
 			continue
 		}
 
-		// once we have loaded it and are sure it's valid YAML we can turn it into a template
-		tmpl, err := template.New(service.ConfigTemplate).Parse(string(rawTemplate))
-		if err != nil {
-			logger.Println(err)
-			logger.Printf("Could not load template for %s. Skipping.\n", service.ConfigTemplate)
-			continue
-		}
+		// once we have the template and have verified its validity, we save it to our template store
 		templates[service.ConfigTemplate] = tmpl
 
 	}

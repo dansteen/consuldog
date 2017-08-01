@@ -62,9 +62,9 @@ func watch(cmd *cobra.Command, args []string) {
 	if len(viper.GetStringSlice("nodeName")) > 0 {
 		nodeNames = viper.GetStringSlice("nodeName")
 	} else {
-		log.Printf("%s", "No nodeName specified.  Attempting to read it from local agent....")
+		log.Printf("%s", "No nodeName specified.  Reading it from provided agent....")
 		nodeNames = []string{client.GetNodeName()}
-		log.Printf("%s\n", nodeNames[0])
+		log.Printf("Using '%s'", nodeNames[0])
 	}
 	// then run a thread for each node we are monitoring
 	for _, node := range nodeNames {
@@ -77,10 +77,8 @@ func watch(cmd *cobra.Command, args []string) {
 			// first clear existing services for this node from our service record
 			allServices.ClearNode(nodeServices.Node)
 			// then add in the new services for this node
-			log.Println(nodeServices.Node)
 			for _, service := range nodeServices.Services {
-				log.Printf("%+v:%+v\n", service.ConfigTemplate, service.DatadogType)
-				log.Printf("%+v:%+v\n\n", service.Address, service.Port)
+				log.Printf("Found Service: %s -- %s:%s -- %s:%d\n", nodeServices.Node, service.ConfigTemplate, service.DatadogType, service.Address, service.Port)
 				allServices.Add(service)
 			}
 			datadog.WriteConfig(allServices)
