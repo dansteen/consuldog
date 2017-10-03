@@ -1,4 +1,13 @@
-i## Changelog
+## Changelog
+
+### [v0.3.0](https://github.com/dansteen/consuldog/releases/tag/v0.3.0) - 02 Oct 2017 
+Allow each service to have more than one monitor attached to it
+
+#### Breaking Changes
+
+#### Bug Fixes
+
+#### Improvements
 
 ### [v0.2.6](https://github.com/dansteen/consuldog/releases/tag/v0.2.6) - 01 Aug 2017 
 Fixed issues with datadog process detection and signaling

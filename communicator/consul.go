@@ -66,18 +66,30 @@ func (consulClient *ConsulClient) MonitorNode(node string, serviceOut chan<- ser
 
 					// create a list of services to be monitored
 					for _, service := range node.Services {
+						// generate our service
+						var newService services.Service
+						newService = services.Service{
+							Monitors:     make([]services.Monitor, 0),
+							AgentService: *service,
+							Node:         node.Node.Node,
+						}
+
 						// grab our tags that have our prefix
 						for _, tag := range service.Tags {
 							if strings.HasPrefix(tag, viper.GetString("prefix")) {
 								// parse our values
 								values := strings.SplitN(strings.TrimPrefix(tag, viper.GetString("prefix")), ":", 2)
-								foundServices.Services = append(foundServices.Services, services.Service{
+								// and create monitors for them
+								newService.Monitors = append(newService.Monitors, services.Monitor{
 									ConfigTemplate: values[0],
 									DatadogType:    values[1],
-									AgentService:   *service,
-									Node:           node.Node.Node,
+									Service:        &newService,
 								})
 							}
+						}
+						// if we found monitors, add that service to our list
+						if len(newService.Monitors) > 0 {
+							foundServices.Services = append(foundServices.Services, newService)
 						}
 					}
 					// we always return if there was an updat since we need to know if services were removed

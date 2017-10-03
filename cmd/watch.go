@@ -78,9 +78,13 @@ func watch(cmd *cobra.Command, args []string) {
 			allServices.ClearNode(nodeServices.Node)
 			// then add in the new services for this node
 			for _, service := range nodeServices.Services {
-				log.Printf("Found Service: %s -- %s:%s -- %s:%d\n", nodeServices.Node, service.ConfigTemplate, service.DatadogType, service.Address, service.Port)
+				log.Printf("Found Service: %s -- %s -- %s:%d\n", nodeServices.Node, service.Service, service.Address, service.Port)
+				for _, monitor := range service.Monitors {
+					log.Printf("Found Monitor: %s -- %s\n", monitor.ConfigTemplate, monitor.DatadogType)
+				}
 				allServices.Add(service)
 			}
+
 			datadog.WriteConfig(allServices)
 			triggerReload <- true
 		}
