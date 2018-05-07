@@ -20,7 +20,7 @@ That's it!
 ## Details
 Consuldog relies on specific tags being present in consul on the services you wish to monitor.   Each service you want to monitor should have a tag set in the following format:
 ```
-<prefix>:<template_uri>:<datadog_config_name>
+<prefix> <template_uri> <datadog_config_name>
 ```
 Where:
 
