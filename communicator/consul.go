@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// ConsulClient stores information about our communication with consul
 type ConsulClient struct {
 	client *consul.Client
 }
@@ -78,7 +79,7 @@ func (consulClient *ConsulClient) MonitorNode(node string, serviceOut chan<- ser
 						for _, tag := range service.Tags {
 							if strings.HasPrefix(tag, viper.GetString("prefix")) {
 								// parse our values
-								values := strings.SplitN(strings.TrimPrefix(tag, viper.GetString("prefix")), ":", 2)
+								values := strings.SplitN(strings.TrimPrefix(tag, viper.GetString("prefix")), " ", 2)
 								// and create monitors for them
 								newService.Monitors = append(newService.Monitors, services.Monitor{
 									ConfigTemplate: values[0],

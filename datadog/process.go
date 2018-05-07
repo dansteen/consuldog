@@ -37,7 +37,7 @@ func (status *Status) UnmarshalText(text []byte) error {
 	textBuf := bytes.NewBuffer(text)
 	scanner := bufio.NewScanner(textBuf)
 	for scanner.Scan() {
-		// the data is : delimited
+		// the data is space delimited
 		line := strings.SplitN(scanner.Text(), ":", 2)
 		if line[0] == "Name" {
 			status.Name = strings.TrimSpace(line[1])

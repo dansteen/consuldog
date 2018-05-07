@@ -2,6 +2,8 @@ package datadog
 
 import (
 	"bytes"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -13,6 +15,7 @@ import (
 
 	"github.com/dansteen/consuldog/services"
 	consul "github.com/hashicorp/consul/api"
+	getter "github.com/hashicorp/go-getter"
 	"github.com/spf13/viper"
 )
 
@@ -105,14 +108,36 @@ func getConfTemplates(allServices services.Services) map[string]*template.Templa
 	for _, service := range allServices.Services {
 		// for each monitor in our service
 		for _, monitor := range service.Monitors {
-			// get the full path to the template
-			templatePath := path.Join(viper.GetString("templateFolder"), monitor.ConfigTemplate)
+			// first generate a temp filename
+			b := make([]byte, 16)
+			_, err := rand.Read(b)
+			if err != nil {
+				fmt.Println(err)
+				logger.Printf("Warning: Could not get random string %s. Skipping.\n", monitor.ConfigTemplate)
+				continue
+			}
+			randomString := base64.StdEncoding.EncodeToString(b)
+			templatePath := path.Join(viper.GetString("tempFolder"), fmt.Sprintf("%s.%s", path.Base(monitor.ConfigTemplate), randomString))
+			// then download the template file from the url provided
+			err = getter.GetFile(templatePath, monitor.ConfigTemplate)
+			if err != nil {
+				logger.Println(err)
+				logger.Printf("Could not get template for %s. Skipping.\n", monitor.ConfigTemplate)
+				continue
+			}
+
 			// read in the raw template file
 			rawTemplate, err := ioutil.ReadFile(templatePath)
 			if err != nil {
 				logger.Println(err)
 				logger.Printf("Could not load template for %s. Skipping.\n", monitor.ConfigTemplate)
 				continue
+			}
+			// if we can at least read the file we remove it.
+			err = os.Remove(templatePath)
+			if err != nil {
+				logger.Println(err)
+				logger.Printf("Warning: Could not remove temp file %s.\n", templatePath)
 			}
 
 			// turn our raw template string into a template object

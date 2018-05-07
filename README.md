@@ -20,23 +20,21 @@ That's it!
 ## Details
 Consuldog relies on specific tags being present in consul on the services you wish to monitor.   Each service you want to monitor should have a tag set in the following format:
 ```
-<prefix>:<template_name>:<datadog_config_name>
+<prefix>:<template_uri>:<datadog_config_name>
 ```
 Where:
 
 | word                  | Usage                                                                                                                                                                                                                     | Default         |
 |-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
 | \<prefix>             | A freeform string that lets consuldog know that this is a service that needs to be monitored.                                                                                                                             | consuldogConfig |
-| <template_name>       | The name of the template consuldog should *ingest* to generate datadog configs for this services.  This should be the full filename of the template as it is found in the `templateFolder` (see below).                   | n/a             |
+| <template_uri>       | The uri to the template consuldog should *ingest* to generate datadog configs for this services. |  n/a             |
 | <datadog_config_name> | The name of the datadog config file to generate for this service, using the template mentioned above.  This should just be the base name of the config without the `.yaml` extension (e.g. `apache`, *not* `apache.yaml`) | n/a             |
 
 More, concretely, if you are using the default prefix, the tag would look like this:
 ```
-consuldogConfig:app_apache.yaml:apache
+consuldogConfig:http://myhost.com/app_apache.yaml:apache
 ```
-consuldog would recognize the above tag as indicating that this is a service datadog should monitor, and look for a file called `app_apache.yaml` in the template folder, and would use that template as part of the datadog config file named apache.yaml (note that you don't specify the filename extension for the datadog_config_name).  If there are multiple services that generate the same datadog config (e.g. multiple apache services) all of them would be merged into a single apache.yaml file for datadog to use.
-
-Note that, for the above example,  you are expected to have a file called app_apache.yaml in the templates folder (configurable with the `--templateFolder` switch).  If a template is not found, monitoring of that particular service will be skipped and an error will be logged.o
+consuldog would recognize the above tag as indicating that this is a service datadog should monitor, and attempt to get `http://myhost.com/app_apache.yaml`.  It would then use that template as part of the datadog config file named apache.yaml (note that you don't specify the filename extension for the datadog_config_name).  If there are multiple services that generate the same datadog config (e.g. multiple apache services) all of them would be merged into a single apache.yaml file for datadog to use.
 
 ## Templates
 Templates are golang templates, and the general structure of the templates *must* match the standard config files that datadog provides.  Specifically, the templates are expected to have the format:
@@ -89,4 +87,4 @@ consuldog can run without any configuration, and will monitor services that are 
 | -k         | --datadogProcName          | no                           | the name of the datadog process we should send reload signals to.,A process with this name that is running as the same user as consuldog (if one can be found) will be sent a HUP signal when new datadog configs are written. (default "supervisord") |
 | -n         | --nodeName                 | yes                          | the name of the node we want to look at the services of (default is the name of the node of the consul agent we are connecting to)                                                                                                                     |
 | -p         | --prefix                   | no                           | the consul tag prefix to look for in consul to know that a service needs monitoring (default "consuldogConfig")                                                                                                                                       |
-| -t         | --templateFolder           | no                           | the folder containing our datadog templates (default "/etc/dd-agent/conf.d/auto_conf")                                                                                                                                                                 |
+| -t         | --tempFolder           | no                           | the folder to user for temporary file storage |

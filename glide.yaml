@@ -7,3 +7,5 @@ import:
 - package: github.com/spf13/cobra
 - package: github.com/spf13/viper
 - package: github.com/mitchellh/go-ps.git
+- package: github.com/hashicorp/go-getter
+- package: github.com/hashicorp/getter

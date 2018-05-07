@@ -16,7 +16,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -48,10 +47,10 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	RootCmd.PersistentFlags().StringP("templateFolder", "t", "/etc/dd-agent/conf.d/auto_conf", "the folder containing our datadog templates")
+	RootCmd.PersistentFlags().StringP("tempFolder", "t", "/tmp", "the folder to download temporary files to")
 	RootCmd.PersistentFlags().StringP("datadogFolder", "d", "/etc/dd-agent", "the base datadog config folder (the one containing the datadog.conf file)")
 	RootCmd.PersistentFlags().StringP("datadogProcName", "k", "supervisord", "the name of the datadog process we should send reload signals to.  A process with this name, that is running as the same user as consuldog (if one can be found) will be sent a HUP signal when new datadog configs are written.")
-	RootCmd.PersistentFlags().StringP("prefix", "p", "consuldogConfig:", "the consul tag prefix to look for in consul to know that a service needs monitoring")
+	RootCmd.PersistentFlags().StringP("prefix", "p", "consuldogConfig ", "the consul tag prefix to look for in consul to know that a service needs monitoring")
 	RootCmd.PersistentFlags().StringP("consulAddress", "a", "http://localhost:8500", "the address of the consul agent")
 	RootCmd.PersistentFlags().Int64P("datadogMinReloadInterval", "m", 10, "the minimum number of seconds between reloads of the DataDog process regardless of how many times the configs are updated in that time.")
 	RootCmd.PersistentFlags().StringSliceP("nodeName", "n", []string{}, "the name of the node we want to look at the services of (default is the name of the node of the consul agent we are connecting to)")
@@ -72,7 +71,7 @@ func initConfig() {
 	}
 
 	// we have to set this here since it uses other values
-	viper.SetDefault("templateFolder", path.Join(viper.GetString("datadogFolder"), "/conf.d/auto_conf"))
+	viper.SetDefault("tempFolder", "/tmp")
 
 	// if we just want to print the version we do that and exit
 	if viper.GetBool("version") == true {

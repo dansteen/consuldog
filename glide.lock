@@ -1,16 +1,62 @@
-hash: 124925626ac3a60cba673c3d358137fdb727519c92e692e65637471954d22a6d
-updated: 2017-07-27T17:14:25.580103109-04:00
+hash: f365b0e491f40e9bcb81b69e6f8abb76d664c7e6fa3b3e2c91da2e568fd6eff7
+updated: 2018-05-07T15:52:31.166706157-04:00
 imports:
+- name: github.com/aws/aws-sdk-go
+  version: 4aa9bfcedd69afca7252c09d53512b635ab08937
+  subpackages:
+  - aws
+  - aws/credentials
+  - aws/credentials/ec2rolecreds
+  - aws/ec2metadata
+  - aws/session
+  - service/s3
+  - aws/awserr
+  - aws/endpoints
+  - internal/sdkio
+  - internal/shareddefaults
+  - aws/client
+  - aws/client/metadata
+  - aws/corehandlers
+  - aws/request
+  - aws/credentials/stscreds
+  - aws/defaults
+  - aws/awsutil
+  - aws/signer/v4
+  - private/protocol
+  - private/protocol/restxml
+  - internal/sdkrand
+  - service/sts
+  - aws/credentials/endpointcreds
+  - private/protocol/rest
+  - private/protocol/query
+  - private/protocol/xml/xmlutil
+  - private/protocol/query/queryutil
+- name: github.com/bgentry/go-netrc
+  version: 9fd32a8b3d3d3f9d43c341bfe098430e07609480
+  subpackages:
+  - netrc
 - name: github.com/fsnotify/fsnotify
   version: 4da3e2cfbabc9f751898f250b49f2439785783a1
+- name: github.com/go-ini/ini
+  version: bda519ae5f4cbc60d391ff8610711627a08b86ae
 - name: github.com/hashicorp/consul
   version: 3117d9ec2b86d8436512b824305d7b5978f05d48
   subpackages:
   - api
+- name: github.com/hashicorp/getter
+  version: ""
 - name: github.com/hashicorp/go-cleanhttp
   version: 3573b8b52aa7b37b9358d966a898feb387f62437
+- name: github.com/hashicorp/go-getter
+  version: 3f60ec5cfbb2a39731571b9ddae54b303bb0a969
+  subpackages:
+  - helper/url
 - name: github.com/hashicorp/go-rootcerts
   version: 6bb64b370b90e7ef1fa532be9e591a81c3493e00
+- name: github.com/hashicorp/go-safetemp
+  version: b1a1dbde6fdc11e3ae79efd9039009e22d4ae240
+- name: github.com/hashicorp/go-version
+  version: 23480c0665776210b5fbbac6eaaee40e3e6a96b7
 - name: github.com/hashicorp/hcl
   version: 392dba7d905ed5d04a5794ba89f558b27e2ba1ca
   subpackages:
@@ -28,12 +74,16 @@ imports:
   - coordinate
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/jmespath/go-jmespath
+  version: c2b33e8439af944379acbdd9c3a5fe0bc44bd8a5
 - name: github.com/magiconair/properties
   version: be5ece7dd465ab0765a9682137865547526d1dfb
 - name: github.com/mitchellh/go-homedir
   version: b8bc1bf767474819792c23f32d8286a45736f1c6
 - name: github.com/mitchellh/go-ps.git
   version: 4fdf99ab29366514c69ccccddab5dc58b8d84062
+- name: github.com/mitchellh/go-testing-interface
+  version: a61a99592b77c9ba629d254a693acffaeb4b7e28
 - name: github.com/mitchellh/mapstructure
   version: d0303fe809921458f417bcf828397a65db30a7e4
 - name: github.com/pelletier/go-toml
@@ -52,6 +102,12 @@ imports:
   version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
 - name: github.com/spf13/viper
   version: 25b30aa063fc18e48662b86996252eabdcf2f0c7
+- name: github.com/ulikunitz/xz
+  version: 0c6b41e72360850ca4f98dc341fd999726ea007f
+  subpackages:
+  - internal/xlog
+  - lzma
+  - internal/hash
 - name: golang.org/x/sys
   version: c4489faa6e5ab84c0ef40d6ee878f7a030281f0f
   subpackages:
